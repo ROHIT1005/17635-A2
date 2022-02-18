@@ -217,10 +217,8 @@ public class OrdersUI
 					} // if
 
 				} // while
-				System.out.println("No Error");
 				try
 				{
-					System.out.println("Executing Query");
 					response = api.deleteOrder(orderid);
 					System.out.println(response);
 
