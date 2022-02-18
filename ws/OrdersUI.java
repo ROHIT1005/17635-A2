@@ -1,24 +1,25 @@
 /******************************************************************************************************************
-* File:OrdersUI.java
-* Course: 17655
-* Project: Assignment A3
-* Copyright: Copyright (c) 2018 Carnegie Mellon University
-* Versions:
-*	1.0 February 2018 - Initial write of assignment 3 (ajl).
-*
-* Description: This class is the console for the an orders database. This interface uses a webservices or microservice
-* client class to update the orderinfo MySQL database. 
-*
-* Parameters: None
-*
-* Internal Methods: None
-*
-* External Dependencies (one of the following):
-*	- RESTClientAPI - this class provides a restful interface to a node.js webserver (see Server.js and REST.js).
-*	- ms_client - this class provides access to micro services vis-a-vis remote method invocation
-*
-******************************************************************************************************************/
+ * File:OrdersUI.java
+ * Course: 17655
+ * Project: Assignment A3
+ * Copyright: Copyright (c) 2018 Carnegie Mellon University
+ * Versions:
+ *	1.0 February 2018 - Initial write of assignment 3 (ajl).
+ *
+ * Description: This class is the console for the an orders database. This interface uses a webservices or microservice
+ * client class to update the orderinfo MySQL database.
+ *
+ * Parameters: None
+ *
+ * Internal Methods: None
+ *
+ * External Dependencies (one of the following):
+ *	- RESTClientAPI - this class provides a restful interface to a node.js webserver (see Server.js and REST.js).
+ *	- ms_client - this class provides access to micro services vis-a-vis remote method invocation
+ *
+ ******************************************************************************************************************/
 
+import java.io.IOException;
 import java.util.Scanner;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -26,8 +27,7 @@ import java.io.Console;
 
 public class OrdersUI
 {
-	public static void main(String args[])
-	{
+	public static void main(String args[]) throws IOException {
 		boolean done = false;						// main loop flag
 		boolean error = false;						// error flag
 		char    option;								// Menu choice from user
@@ -38,7 +38,7 @@ public class OrdersUI
 		String  address = null;						// customer address
 		String  phone = null;						// customer phone number
 		String  orderid = null;						// order ID
-		String 	response = null;					// response string from REST 
+		String 	response = null;					// response string from REST
 		Scanner keyboard = new Scanner(System.in);	// keyboard scanner object for user input
 		DateTimeFormatter dtf = null;				// Date object formatter
 		LocalDate localDate = null;					// Date object
@@ -49,7 +49,7 @@ public class OrdersUI
 		/////////////////////////////////////////////////////////////////////////////////
 
 		while (!done)
-		{	
+		{
 			// Here, is the main menu set of choices
 
 			System.out.println( "\n\n\n\n" );
@@ -57,17 +57,18 @@ public class OrdersUI
 			System.out.println( "Select an Option: \n" );
 			System.out.println( "1: Retrieve all orders in the order database." );
 			System.out.println( "2: Retrieve an order by ID." );
-			System.out.println( "3: Add a new order to the order database." );				
+			System.out.println( "3: Add a new order to the order database." );
 			System.out.println( "X: Exit\n" );
 			System.out.print( "\n>>>> " );
-			option = keyboard.next().charAt(0);	
-			keyboard.nextLine();	// Removes data from keyboard buffer. If you don't clear the buffer, you blow 
-									// through the next call to nextLine()
+			option = keyboard.next().charAt(0);
+			keyboard.nextLine();	// Removes data from keyboard buffer. If you don't clear the buffer, you blow
+			// through the next call to nextLine()
 
 			//////////// option 1 ////////////
 
 			if ( option == '1' )
 			{
+				logger.addLog("rohit", "retrieved all orders in the order database.");
 				// Here we retrieve all the orders in the order database
 
 				System.out.println( "\nRetrieving All Orders::" );
@@ -99,6 +100,7 @@ public class OrdersUI
 				{
 					System.out.print( "\nEnter the order ID: " );
 					orderid = keyboard.nextLine();
+					logger.addLog("rohit", "retrieved an order by ID: " + orderid);
 
 					try
 					{
@@ -121,7 +123,7 @@ public class OrdersUI
 				} catch (Exception e) {
 
 					System.out.println("Request failed:: " + e);
-					
+
 				}
 
 				System.out.println("\nPress enter to continue..." );
@@ -133,6 +135,7 @@ public class OrdersUI
 
 			if ( option == '3' )
 			{
+				logger.addLog("rohit", "added a new order to the order database.");
 				// Here we create a new order entry in the database
 
 				dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -144,7 +147,7 @@ public class OrdersUI
 
 				System.out.println("Enter last name:");
 				last = keyboard.nextLine();
-		
+
 				System.out.println("Enter address:");
 				address = keyboard.nextLine();
 
@@ -153,12 +156,12 @@ public class OrdersUI
 
 				System.out.println("Creating the following order:");
 				System.out.println("==============================");
-				System.out.println(" Date:" + date);		
+				System.out.println(" Date:" + date);
 				System.out.println(" First name:" + first);
 				System.out.println(" Last name:" + last);
 				System.out.println(" Address:" + address);
 				System.out.println(" Phone:" + phone);
-				System.out.println("==============================");					
+				System.out.println("==============================");
 				System.out.println("\nPress 'y' to create this order:");
 
 				option = keyboard.next().charAt(0);
@@ -193,6 +196,7 @@ public class OrdersUI
 
 			if ( ( option == 'X' ) || ( option == 'x' ))
 			{
+				logger.addLog("rohit", "quit the application.");
 				// Here the user is done, so we set the Done flag and halt the system
 
 				done = true;
@@ -202,6 +206,6 @@ public class OrdersUI
 
 		} // while
 
-  	} // main
+	} // main
 
 } // OrdersUI
