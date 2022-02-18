@@ -19,15 +19,19 @@
 *
 ******************************************************************************************************************/
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Scanner;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.io.Console;
 
 public class OrdersUI
 {
-	public static void main(String args[])
-	{
+
+	public static void main(String args[]) throws IOException {
 		boolean done = false;						// main loop flag
 		boolean error = false;						// error flag
 		char    option;								// Menu choice from user
@@ -68,8 +72,10 @@ public class OrdersUI
 
 			if ( option == '1' )
 			{
-				// Here we retrieve all the orders in the order database
+				logger.addLog("rohit", "retrieved all orders in the order database.");
 
+				// Here we retrieve all the orders in the order database
+				
 				System.out.println( "\nRetrieving All Orders::" );
 				try
 				{
@@ -99,6 +105,8 @@ public class OrdersUI
 				{
 					System.out.print( "\nEnter the order ID: " );
 					orderid = keyboard.nextLine();
+
+					logger.addLog("rohit", "retrieved an order by ID: " + orderid);
 
 					try
 					{
@@ -133,6 +141,7 @@ public class OrdersUI
 
 			if ( option == '3' )
 			{
+				logger.addLog("rohit", "added a new order to the order database.");
 				// Here we create a new order entry in the database
 
 				dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -193,6 +202,7 @@ public class OrdersUI
 
 			if ( ( option == 'X' ) || ( option == 'x' ))
 			{
+				logger.addLog("rohit", "quit the application.");
 				// Here the user is done, so we set the Done flag and halt the system
 
 				done = true;
