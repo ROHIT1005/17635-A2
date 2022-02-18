@@ -1,29 +1,38 @@
 /******************************************************************************************************************
-* File:OrdersUI.java
-* Course: 17655
-* Project: Assignment A3
-* Copyright: Copyright (c) 2018 Carnegie Mellon University
-* Versions:
-*	1.0 February 2018 - Initial write of assignment 3 (ajl).
-*
-* Description: This class is the console for the an orders database. This interface uses a webservices or microservice
-* client class to update the ms_orderinfo MySQL database. 
-*
-* Parameters: None
-*
-* Internal Methods: None
-*
-* External Dependencies (one of the following):
-*	- MSlientAPI - this class provides an interface to a set of microservices
-*	- RetrieveServices - this is the server-side micro service for retrieving info from the ms_orders database
-*	- CreateServices - this is the server-side micro service for creating new orders in the ms_orders database
-*
-******************************************************************************************************************/
+ * File:OrdersUI.java
+ * Course: 17655
+ * Project: Assignment A3
+ * Copyright: Copyright (c) 2018 Carnegie Mellon University
+ * Versions:
+ *	1.0 February 2018 - Initial write of assignment 3 (ajl).
+ *
+ * Description: This class is the console for the an orders database. This interface uses a webservices or microservice
+ * client class to update the ms_orderinfo MySQL database.
+ *
+ * Parameters: None
+ *
+ * Internal Methods: None
+ *
+ * External Dependencies (one of the following):
+ *	- MSlientAPI - this class provides an interface to a set of microservices
+ *	- RetrieveServices - this is the server-side micro service for retrieving info from the ms_orders database
+ *	- CreateServices - this is the server-side micro service for creating new orders in the ms_orders database
+ *
+ ******************************************************************************************************************/
+
 import java.lang.Exception;
 import java.util.Scanner;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.io.Console;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class OrdersUI
 {
@@ -39,7 +48,7 @@ public class OrdersUI
 		String  address = null;						// customer address
 		String  phone = null;						// customer phone number
 		String  orderid = null;						// order ID
-		String 	response = null;					// response string from REST 
+		String 	response = null;					// response string from REST
 		Scanner keyboard = new Scanner(System.in);	// keyboard scanner object for user input
 		DateTimeFormatter dtf = null;				// Date object formatter
 		LocalDate localDate = null;					// Date object
@@ -50,7 +59,7 @@ public class OrdersUI
 		/////////////////////////////////////////////////////////////////////////////////
 
 		while (!done)
-		{	
+		{
 			// Here, is the main menu set of choices
 
 			System.out.println( "\n\n\n\n" );
@@ -58,17 +67,18 @@ public class OrdersUI
 			System.out.println( "Select an Option: \n" );
 			System.out.println( "1: Retrieve all orders in the order database." );
 			System.out.println( "2: Retrieve an order by ID." );
-			System.out.println( "3: Add a new order to the order database." );				
+			System.out.println( "3: Add a new order to the order database." );
 			System.out.println( "X: Exit\n" );
 			System.out.print( "\n>>>> " );
-			option = keyboard.next().charAt(0);	
-			keyboard.nextLine();	// Removes data from keyboard buffer. If you don't clear the buffer, you blow 
-									// through the next call to nextLine()
+			option = keyboard.next().charAt(0);
+			keyboard.nextLine();	// Removes data from keyboard buffer. If you don't clear the buffer, you blow
+			// through the next call to nextLine()
 
 			//////////// option 1 ////////////
 
 			if ( option == '1' )
 			{
+				addLog("rohit", "retrieved all orders in the order database.");
 				// Here we retrieve all the orders in the ms_orderinfo database
 
 				System.out.println( "\nRetrieving All Orders::" );
@@ -100,6 +110,7 @@ public class OrdersUI
 				{
 					System.out.print( "\nEnter the order ID: " );
 					orderid = keyboard.nextLine();
+					addLog("rohit", "retrieved an order by ID: " + orderid);
 
 					try
 					{
@@ -122,7 +133,7 @@ public class OrdersUI
 				} catch (Exception e) {
 
 					System.out.println("Request failed:: " + e);
-					
+
 				}
 
 				System.out.println("\nPress enter to continue..." );
@@ -134,6 +145,7 @@ public class OrdersUI
 
 			if ( option == '3' )
 			{
+				addLog("rohit", "added a new order to the order database.");
 				// Here we create a new order entry in the database
 
 				dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -145,7 +157,7 @@ public class OrdersUI
 
 				System.out.println("Enter last name:");
 				last = keyboard.nextLine();
-		
+
 				System.out.println("Enter address:");
 				address = keyboard.nextLine();
 
@@ -154,12 +166,12 @@ public class OrdersUI
 
 				System.out.println("Creating the following order:");
 				System.out.println("==============================");
-				System.out.println(" Date:" + date);		
+				System.out.println(" Date:" + date);
 				System.out.println(" First name:" + first);
 				System.out.println(" Last name:" + last);
 				System.out.println(" Address:" + address);
 				System.out.println(" Phone:" + phone);
-				System.out.println("==============================");					
+				System.out.println("==============================");
 				System.out.println("\nPress 'y' to create this order:");
 
 				option = keyboard.next().charAt(0);
@@ -194,6 +206,7 @@ public class OrdersUI
 
 			if ( ( option == 'X' ) || ( option == 'x' ))
 			{
+				addLog("rohit", "quit the application.");
 				// Here the user is done, so we set the Done flag and halt the system
 
 				done = true;
@@ -203,6 +216,39 @@ public class OrdersUI
 
 		} // while
 
-  	} // main
+	} // main
+
+	private static void addLog(String username, String logEntry) throws IOException {
+
+		String filePathString = "logs" + File.separator + "logs.txt";
+		File f = new File(filePathString);
+
+		final String dir = System.getProperty("user.dir");
+		Path p = Paths.get(dir + "/logs/logs.txt");
+
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+		LocalDateTime now = LocalDateTime.now();
+		String s = System.lineSeparator() + dtf.format(now) + " : " + username + " : " + logEntry;
+
+		if(f.exists())
+		{
+			try {
+				Files.write(p, s.getBytes(), StandardOpenOption.APPEND);
+			} catch (IOException e) {
+				System.err.println(e);
+			}
+		}
+		else
+		{
+			f.getParentFile().mkdirs();
+			f.createNewFile();
+
+			try {
+				Files.write(p, s.getBytes(), StandardOpenOption.APPEND);
+			} catch (IOException e) {
+				System.err.println(e);
+			}
+		}
+	}
 
 } // OrdersUI
