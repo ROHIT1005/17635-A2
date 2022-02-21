@@ -50,10 +50,10 @@ public class WSClientAPI
 
 		con.setRequestMethod("POST");
 		con.setRequestProperty("Accept-Language", "en-GB,en;q=0.5");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("charset", "utf-8");
-        con.setUseCaches(false);
-        con.setDoOutput(true);
+		con.setRequestProperty("Content-Type", "application/json");
+		con.setRequestProperty("charset", "utf-8");
+		con.setUseCaches(false);
+		con.setDoOutput(true);
 
 		String input = new JSONObject()
 			.put("username", username)
