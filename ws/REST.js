@@ -26,6 +26,7 @@
 ******************************************************************************************************************/
 
 var mysql   = require("mysql");     //Database
+var authData = require("./authdata.js");
 
 function REST_ROUTER(router,connection) {
     var self = this;
@@ -44,6 +45,11 @@ REST_ROUTER.prototype.handleRoutes= function(router,connection) {
     router.get("/",function(req,res){
         res.json({"Message":"Orders Webservices Server Version 1.0"});
     });
+
+    router.post("/register", function(req, res) {
+        let token = authData.register(req.body['username'], req.body['password']);
+        res.json({"Message":"registered", "authToken": token});
+    })
     
     // GET for /orders specifier - returns all orders currently stored in the database
     // req paramdter is the request object
