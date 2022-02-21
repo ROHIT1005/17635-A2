@@ -5,6 +5,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.io.FileReader;
+import java.util.Properties;
+import java.rmi.RemoteException; 
+import java.rmi.registry.LocateRegistry;
+import java.rmi.Naming;
+import java.sql.*;
+import java.io.IOException;
 
 public class DeleteServices extends UnicastRemoteObject implements DeleteServicesAI {
 
@@ -15,8 +22,28 @@ public class DeleteServices extends UnicastRemoteObject implements DeleteService
     // Set up the orderinfo database credentials
     static final String USER = "root";
     static final String PASS = Configuration.MYSQL_PASSWORD;
+    Properties registry = null;
 
-    public DeleteServices() throws RemoteException {}
+    public DeleteServices() throws RemoteException, IOException {
+        registry = new Properties();
+        registry.load(new FileReader("registry.properties"));
+    }
+
+    private boolean authenticate(String token) {
+        String entry = registry.getProperty("AuthenticationServices");
+        String host = entry.split(":")[0];
+        String port = entry.split(":")[1];
+        try {
+            Registry reg = LocateRegistry.getRegistry(host, Integer.parseInt(port));
+            AuthenticationServicesAI obj = (AuthenticationServicesAI)reg.lookup("AuthenticationServices");
+            boolean response = obj.verify(token);
+            return response;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     // Main service loop
     public static void main(String args[])
@@ -46,7 +73,9 @@ public class DeleteServices extends UnicastRemoteObject implements DeleteService
 
     }
 
-    public String deleteOrder(String orderid) throws RemoteException {
+    public String deleteOrder(String orderid, String authToken) throws RemoteException {
+        this.authenticate(authToken); //verify but don't deny access to service
+
         // Local declarations
 
         Connection conn = null;		// connection to the orderinfo database

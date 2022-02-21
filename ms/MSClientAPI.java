@@ -162,7 +162,7 @@ public class MSClientAPI
 		// Get the RMI registry
 		Registry reg = LocateRegistry.getRegistry(host, Integer.parseInt(port));
 		DeleteServicesAI obj = (DeleteServicesAI)reg.lookup("DeleteServices");
-		response = obj.deleteOrder(order_id);
+		response = obj.deleteOrder(order_id, this.authToken);
 
 		return response;
 	}
