@@ -100,11 +100,7 @@ public class CreateServices extends UnicastRemoteObject implements CreateService
     public String newOrder(String idate, String ifirst, String ilast, String iaddress, String iphone, String token) throws RemoteException
     {
         this.authenticate(token); //verify but don't deny access to service
-        
-        boolean isAuthenticated = this.authenticate(token);
-        if (!isAuthenticated) {
-            return "";
-        }
+
       	// Local declarations
 
         Connection conn = null;		                 // connection to the orderinfo database
