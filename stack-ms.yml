@@ -16,6 +16,22 @@ services:
       MYSQL_REMOTE_HOST: ms_mysql
       MYSQL_REMOTE_PORT: 3306
 
+  delete:
+    image: ms_delete
+    container_name: ms_delete
+    build:
+      context: .
+      dockerfile: Dockerfile-ds
+      args:
+        MYSQL_PASSWORD: Password@123
+    depends_on:
+      - mysql
+    environment:
+      RMI_REMOTE_HOST: ms_delete
+      RMI_REMOTE_PORT: 1096
+      MYSQL_REMOTE_HOST: ms_mysql
+      MYSQL_REMOTE_PORT: 3306
+
   retrieve:
     image: ms_retrieve
     container_name: ms_retrieve
@@ -31,6 +47,22 @@ services:
       RMI_REMOTE_PORT: 1098
       MYSQL_REMOTE_HOST: ms_mysql
       MYSQL_REMOTE_PORT: 3306        
+  
+  authenticate:
+    image: ms_authenticate
+    container_name: ms_authenticate
+    build:
+      context: .
+      dockerfile: Dockerfile-auth
+      args:
+        MYSQL_PASSWORD: Password@123
+    depends_on:
+      - mysql
+    environment:
+      RMI_REMOTE_HOST: ms_authenticate
+      RMI_REMOTE_PORT: 1097
+      MYSQL_REMOTE_HOST: ms_mysql
+      MYSQL_REMOTE_PORT: 3306
 
   client:
     image: ms_client
