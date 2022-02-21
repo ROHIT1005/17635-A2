@@ -145,4 +145,26 @@ public class MSClientAPI
 		return(response);
     }
 
+	/********************************************************************************
+	 * Description: Deletes an order in the orderinfo database. Note
+	 *              that this method is serviced by the DeleteServices server
+	 *			   process.
+	 * Parameters: order_id
+	 * Returns: String of all the order deleted from the orderinfo database
+	 ********************************************************************************/
+
+	public String deleteOrder(String order_id) throws Exception
+	{
+		// Get the registry entry for RetrieveServices service
+		String entry = registry.getProperty("DeleteServices");
+		String host = entry.split(":")[0];
+		String port = entry.split(":")[1];
+		// Get the RMI registry
+		Registry reg = LocateRegistry.getRegistry(host, Integer.parseInt(port));
+		DeleteServicesAI obj = (DeleteServicesAI)reg.lookup("DeleteServices");
+		response = obj.deleteOrder(order_id);
+
+		return response;
+	}
+
 }
