@@ -9,5 +9,5 @@ public interface DeleteServicesAI extends java.rmi.Remote
      * pairs format.
      *******************************************************/
 
-    String deleteOrder(String orderid) throws RemoteException;
+    String deleteOrder(String orderid, String authToken) throws RemoteException;
 }

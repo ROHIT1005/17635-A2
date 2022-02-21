@@ -72,9 +72,11 @@ public class OrdersUI
 			{
 				// Here we retrieve all the orders in the ms_orderinfo database
 
-				System.out.println( "\nRetrieving All Orders::" );
+				System.out.println("Retrieving All Orders::\n");
 				try
 				{
+					System.out.println("calling api.retrieveOrders\n"+api==null);
+
 					response = api.retrieveOrders();
 					System.out.println(response);
 
