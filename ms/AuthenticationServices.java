@@ -7,12 +7,6 @@ import java.util.HashSet;
 
 public class AuthenticationServices extends UnicastRemoteObject implements AuthenticationServicesAI
 { 
-    static final String JDBC_CONNECTOR = "com.mysql.jdbc.Driver";  
-    static final String DB_URL = Configuration.getJDBCConnection();
-
-    static final String USER = "root";
-    static final String PASS = Configuration.MYSQL_PASSWORD;
-
     private HashMap<String, String> creds = new HashMap<String, String>();
     private HashSet<String> tokens = new HashSet<String>();
     public AuthenticationServices() throws RemoteException {}
