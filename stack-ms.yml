@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile-cs
       args:
-        MYSQL_PASSWORD: Password@123
+        MYSQL_PASSWORD: foobar
     depends_on:
       - mysql
     environment:
@@ -23,7 +23,7 @@ services:
       context: .
       dockerfile: Dockerfile-rs
       args:
-        MYSQL_PASSWORD: Password@123
+        MYSQL_PASSWORD: foobar
     depends_on:
       - mysql
     environment:
@@ -31,6 +31,22 @@ services:
       RMI_REMOTE_PORT: 1098
       MYSQL_REMOTE_HOST: ms_mysql
       MYSQL_REMOTE_PORT: 3306        
+  
+  authenticate:
+    image: ms_authenticate
+    container_name: ms_authenticate
+    build:
+      context: .
+      dockerfile: Dockerfile-auth
+      args:
+        MYSQL_PASSWORD: foobar
+    depends_on:
+      - mysql
+    environment:
+      RMI_REMOTE_HOST: ms_authenticate
+      RMI_REMOTE_PORT: 1097
+      MYSQL_REMOTE_HOST: ms_mysql
+      MYSQL_REMOTE_PORT: 3306
 
   client:
     image: ms_client
@@ -53,7 +69,7 @@ services:
       - ./init-db/dbtemplate.sql:/docker-entrypoint-initdb.d/1.sql
       - ms_db:/var/lib/mysql
     environment:
-      "MYSQL_ROOT_PASSWORD": Password@123
+      "MYSQL_ROOT_PASSWORD": foobar
       "MYSQL_DATABASE": ms_orderinfo
       "MYSQL_HOST": ms_mysql
     expose:
