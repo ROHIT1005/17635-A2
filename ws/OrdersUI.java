@@ -19,6 +19,7 @@
 *
 ******************************************************************************************************************/
 
+import java.io.IOException;
 import java.util.Scanner;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -26,7 +27,7 @@ import java.io.Console;
 
 public class OrdersUI
 {
-	public static void main(String args[])
+	public static void main(String args[]) throws IOException
 	{
 		boolean done = false;						// main loop flag
 		boolean error = false;						// error flag
@@ -69,6 +70,9 @@ public class OrdersUI
 
 			if ( option == '1' )
 			{
+
+				logger.addLog("user", "retrieved all orders in the order database.");
+
 				// Here we retrieve all the orders in the order database
 
 				System.out.println( "\nRetrieving All Orders::" );
@@ -100,6 +104,7 @@ public class OrdersUI
 				{
 					System.out.print( "\nEnter the order ID: " );
 					orderid = keyboard.nextLine();
+					logger.addLog("user", "retrieved an order by ID: " + orderid);
 
 					try
 					{
@@ -134,6 +139,7 @@ public class OrdersUI
 
 			if ( option == '3' )
 			{
+				logger.addLog("user", "added a new order to the order database.");
 				// Here we create a new order entry in the database
 
 				dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -201,6 +207,7 @@ public class OrdersUI
 				{
 					System.out.print( "\nEnter the order ID: " );
 					orderid = keyboard.nextLine();
+					logger.addLog("user", "deleted an order with ID: " + orderid);
 
 					try
 					{

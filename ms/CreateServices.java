@@ -28,6 +28,14 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.Naming;
 import java.sql.*;
 import java.io.IOException;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class CreateServices extends UnicastRemoteObject implements CreateServicesAI
 { 
@@ -141,10 +149,51 @@ public class CreateServices extends UnicastRemoteObject implements CreateService
         } catch(Exception e) {
 
             ReturnString = e.toString();
-        } 
-        
+        }
+
+        try{
+            addLog("user", "created an order.");
+
+        } catch (IOException e)
+        {
+
+        }
+
         return(ReturnString);
 
     } //retrieve all orders
+
+    private static void addLog(String username, String logEntry) throws IOException {
+
+        String filePathString = "logs" + File.separator + "logs.txt";
+        File f = new File(filePathString);
+
+        final String dir = System.getProperty("user.dir");
+        Path p = Paths.get(dir + "/logs/logs.txt");
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        String s = System.lineSeparator() + dtf.format(now) + " : " + username + " : " + logEntry;
+
+        if(f.exists())
+        {
+            try {
+                Files.write(p, s.getBytes(), StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                System.err.println(e);
+            }
+        }
+        else
+        {
+            f.getParentFile().mkdirs();
+            f.createNewFile();
+
+            try {
+                Files.write(p, s.getBytes(), StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                System.err.println(e);
+            }
+        }
+    }
 
 } // RetrieveServices
