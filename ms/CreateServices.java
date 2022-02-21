@@ -19,10 +19,15 @@
 *	= MySQL
 	- orderinfo database 
 ******************************************************************************************************************/
+import java.io.FileReader;
+import java.util.Properties;
 import java.rmi.RemoteException; 
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.registry.Registry;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.Naming;
 import java.sql.*;
+import java.io.IOException;
 
 public class CreateServices extends UnicastRemoteObject implements CreateServicesAI
 { 
@@ -33,9 +38,29 @@ public class CreateServices extends UnicastRemoteObject implements CreateService
     // Set up the orderinfo database credentials
     static final String USER = "root";
     static final String PASS = Configuration.MYSQL_PASSWORD;
-
+    Properties registry = null;
+    
     // Do nothing constructor
-    public CreateServices() throws RemoteException {}
+    public CreateServices() throws IOException {
+        registry = new Properties();
+        registry.load(new FileReader("registry.properties"));
+    }
+
+    private boolean authenticate(String token) {
+        String entry = registry.getProperty("AuthenticationServices");
+        String host = entry.split(":")[0];
+        String port = entry.split(":")[1];
+        try {
+            Registry reg = LocateRegistry.getRegistry(host, Integer.parseInt(port));
+            AuthenticationServicesAI obj = (AuthenticationServicesAI)reg.lookup("AuthenticationServices");
+            boolean response = obj.verify(token);
+            return response;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     // Main service loop
     public static void main(String args[]) 
@@ -57,7 +82,7 @@ public class CreateServices extends UnicastRemoteObject implements CreateService
                 System.out.println("\t" + name);
             }
             // Bind this object instance to the name RetrieveServices in the rmiregistry 
-            // Naming.rebind("//" + Configuration.getRemoteHost() + ":1099/CreateServices", obj); 
+            // Naming.rebind("rmi://" + Configuration.getRemoteHost() + ":1099/CreateServices", obj); 
 
         } catch (Exception e) {
 
@@ -72,8 +97,10 @@ public class CreateServices extends UnicastRemoteObject implements CreateService
 
     // This method add the entry into the ms_orderinfo database
 
-    public String newOrder(String idate, String ifirst, String ilast, String iaddress, String iphone) throws RemoteException
+    public String newOrder(String idate, String ifirst, String ilast, String iaddress, String iphone, String token) throws RemoteException
     {
+        this.authenticate(token); //verify but don't deny access to service
+
       	// Local declarations
 
         Connection conn = null;		                 // connection to the orderinfo database
@@ -115,9 +142,42 @@ public class CreateServices extends UnicastRemoteObject implements CreateService
 
             ReturnString = e.toString();
         } 
-        
+        addLog("user", "created an order.");
         return(ReturnString);
 
     } //retrieve all orders
+
+    private static void addLog(String username, String logEntry) throws IOException {
+
+        String filePathString = "logs" + File.separator + "logs.txt";
+        File f = new File(filePathString);
+
+        final String dir = System.getProperty("user.dir");
+        Path p = Paths.get(dir + "/logs/logs.txt");
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        String s = System.lineSeparator() + dtf.format(now) + " : " + username + " : " + logEntry;
+
+        if(f.exists())
+        {
+            try {
+                Files.write(p, s.getBytes(), StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                System.err.println(e);
+            }
+        }
+        else
+        {
+            f.getParentFile().mkdirs();
+            f.createNewFile();
+
+            try {
+                Files.write(p, s.getBytes(), StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                System.err.println(e);
+            }
+        }
+    }
 
 } // RetrieveServices

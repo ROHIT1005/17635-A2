@@ -20,10 +20,16 @@
 *	= MySQL
 	- orderinfo database 
 ******************************************************************************************************************/
+import java.util.Properties;
+import java.io.FileReader;
 import java.rmi.RemoteException; 
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.registry.Registry;
+import java.rmi.registry.LocateRegistry;
 import java.sql.*;
+import java.io.IOException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 
 public class RetrieveServices extends UnicastRemoteObject implements RetrieveServicesAI
 { 
@@ -34,9 +40,30 @@ public class RetrieveServices extends UnicastRemoteObject implements RetrieveSer
     // Set up the orderinfo database credentials
     static final String USER = "root";
     static final String PASS = Configuration.MYSQL_PASSWORD;
+    Properties registry = null;
 
     // Do nothing constructor
-    public RetrieveServices() throws RemoteException {}
+    public RetrieveServices() throws IOException {
+        registry = new Properties();
+        registry.load(new FileReader("registry.properties"));
+    }
+
+    private boolean authenticate(String token) {
+        String entry = registry.getProperty("AuthenticationServices");
+        String host = entry.split(":")[0];
+        String port = entry.split(":")[1];
+        try {
+            Registry reg = LocateRegistry.getRegistry(host, Integer.parseInt(port));
+            AuthenticationServicesAI obj = (AuthenticationServicesAI)reg.lookup("AuthenticationServices");
+            boolean response = obj.verify(token);
+            return response;
+        }
+        catch (Exception e) {
+            System.out.println("asjdalksjdlkasjd");
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     // Main service loop
     public static void main(String args[]) 
@@ -71,8 +98,10 @@ public class RetrieveServices extends UnicastRemoteObject implements RetrieveSer
 
     // This method will return all the entries in the orderinfo database
 
-    public String retrieveOrders() throws RemoteException
+    public String retrieveOrders(String token) throws RemoteException
     {
+        this.authenticate(token); //verify but don't deny access to service
+
       	// Local declarations
 
         Connection conn = null;		// connection to the orderinfo database
@@ -140,7 +169,9 @@ public class RetrieveServices extends UnicastRemoteObject implements RetrieveSer
         } catch(Exception e) {
 
             ReturnString = e.toString();
-        } 
+        }
+
+        addLog("user", "retreived all orders.");
         
         return(ReturnString);
 
@@ -149,8 +180,10 @@ public class RetrieveServices extends UnicastRemoteObject implements RetrieveSer
     // This method will returns the order in the orderinfo database corresponding to the id
     // provided in the argument.
 
-    public String retrieveOrders(String orderid) throws RemoteException
+    public String retrieveOrders(String orderid, String token) throws RemoteException
     {
+        this.authenticate(token); //verify but don't deny access to service
+
       	// Local declarations
 
         Connection conn = null;		// connection to the orderinfo database
@@ -221,10 +254,45 @@ public class RetrieveServices extends UnicastRemoteObject implements RetrieveSer
 
             ReturnString = e.toString();
 
-        } 
+        }
+
+        addLog("user", "retrieved an order with ID: " + orderid);
 
         return(ReturnString);
 
     } //retrieve order by id
+
+    private static void addLog(String username, String logEntry) throws IOException {
+
+        String filePathString = "logs" + File.separator + "logs.txt";
+        File f = new File(filePathString);
+
+        final String dir = System.getProperty("user.dir");
+        Path p = Paths.get(dir + "/logs/logs.txt");
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        String s = System.lineSeparator() + dtf.format(now) + " : " + username + " : " + logEntry;
+
+        if(f.exists())
+        {
+            try {
+                Files.write(p, s.getBytes(), StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                System.err.println(e);
+            }
+        }
+        else
+        {
+            f.getParentFile().mkdirs();
+            f.createNewFile();
+
+            try {
+                Files.write(p, s.getBytes(), StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                System.err.println(e);
+            }
+        }
+    }
 
 } // RetrieveServices
