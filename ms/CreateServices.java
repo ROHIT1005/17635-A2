@@ -153,6 +153,7 @@ public class CreateServices extends UnicastRemoteObject implements CreateService
 
         try{
             addLog("user", "created an order.");
+
         } catch (IOException e)
         {
 
