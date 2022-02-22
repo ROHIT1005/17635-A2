@@ -73,7 +73,7 @@ REST.prototype.configureExpress = function(connection) {
           });
           next();
       })
-      app.use((req, res, next) => {
+      app.use((req, res, next) => { //authentication
         if (!authData.checkToken(req.headers['authorization'])) {
             console.log('user not authenticated');
         }

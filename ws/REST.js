@@ -46,6 +46,9 @@ REST_ROUTER.prototype.handleRoutes= function(router,connection) {
         res.json({"Message":"Orders Webservices Server Version 1.0"});
     });
 
+    // POST for /register
+    // request body contains username and password for the user to be registered
+    // res parameter is the response object
     router.post("/register", function(req, res) {
         let token = authData.register(req.body['username'], req.body['password']);
         res.json({"Message":"registered", "authToken": token});
