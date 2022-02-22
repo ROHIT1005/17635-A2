@@ -3,5 +3,5 @@ To build OrdersUI client for ws, we need to set CLASSPATH to include json-202112
 ```
 $ cd ws
 $ javac -classpath "json-20211205.jar" *.java
-$ java OrdersUI
+$ java -classpath ".;json-20211205.jar" OrdersUI.java
 ```
