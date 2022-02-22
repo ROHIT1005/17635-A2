@@ -29,6 +29,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
+import org.json.JSONObject;
 
 public class WSClientAPI
 {
@@ -37,9 +39,79 @@ public class WSClientAPI
 	* Parameters: None
 	* Returns: String of all the current orders in the orderinfo database
 	********************************************************************************/
+	private boolean isAuthenticated = false;
+	private String authToken = "";
+
+	public void register(String username, String password) throws Exception {
+		String url = "http://localhost:3000/api/register";
+
+		URL obj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+		con.setRequestMethod("POST");
+		con.setRequestProperty("Accept-Language", "en-GB,en;q=0.5");
+		con.setRequestProperty("Content-Type", "application/json");
+		con.setRequestProperty("charset", "utf-8");
+		con.setUseCaches(false);
+		con.setDoOutput(true);
+
+		String input = new JSONObject()
+			.put("username", username)
+			.put("password", password)
+			.toString();
+
+		OutputStream os = con.getOutputStream();
+		os.write(input.getBytes());
+		os.flush();
+
+		int responseCode = con.getResponseCode();
+
+		//Loop through the input and build the response string.
+		//When done, close the stream.	
+		BufferedReader in = new BufferedReader(new InputStreamReader((con.getInputStream())));
+		String inputLine;		
+		StringBuffer response = new StringBuffer();
+
+		//Loop through the input and build the response string.
+		//When done, close the stream.		
+
+		while ((inputLine = in.readLine()) != null) 
+		{
+			response.append(inputLine);
+		}
+		String token = new JSONObject(response.toString()).getString("authToken");
+		this.authToken = token;
+		
+		in.close();
+		con.disconnect();
+	}
+
+	public void authenticate() throws Exception {
+		System.out.println("You're not authenticated. Do you want to register or login?");
+		System.out.println("1. Register");
+		System.out.println("2. Login");
+
+		Scanner keyboard = new Scanner(System.in);
+		String option = keyboard.nextLine();
+		System.out.println("Enter username: ");
+		String username = keyboard.nextLine();
+
+		System.out.println("Enter password: ");
+		String password = keyboard.nextLine();
+
+		if (option.strip().equals("1")) {
+			this.register(username, password);
+		} else {
+			this.register(username, password);
+		}
+		this.isAuthenticated = true;
+	}
 
 	public String retrieveOrders() throws Exception
 	{
+		if (!this.isAuthenticated) {
+			this.authenticate();
+		}
 		// Set up the URL and connect to the node server
 
 		String url = "http://localhost:3000/api/orders";
@@ -49,6 +121,7 @@ public class WSClientAPI
 
 		//Form the request header and instantiate the response code
 		con.setRequestMethod("GET");
+		con.setRequestProperty("Authorization", this.authToken);
 		int responseCode = con.getResponseCode();
 
 
@@ -79,6 +152,9 @@ public class WSClientAPI
 
 	public String retrieveOrders(String id) throws Exception
 	{
+		if (!this.isAuthenticated) {
+			this.authenticate();
+		}
 		// Set up the URL and connect to the node server
 		String url = "http://localhost:3000/api/orders/"+id;
 		URL obj = new URL(url);
@@ -86,6 +162,7 @@ public class WSClientAPI
 
 		//Form the request header and instantiate the response code
 		con.setRequestMethod("GET");
+		con.setRequestProperty("Authorization", this.authToken);
 		int responseCode = con.getResponseCode();
 
 		//Set up a buffer to read the response from the server
@@ -114,6 +191,9 @@ public class WSClientAPI
 
    	public String newOrder(String Date, String FirstName, String LastName, String Address, String Phone) throws Exception
 	{
+		if (!this.isAuthenticated) {
+			this.authenticate();
+		}
 		// Set up the URL and connect to the node server		
 		URL url = new URL("http://localhost:3000/api/orders");
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -123,6 +203,7 @@ public class WSClientAPI
 
 		//Configure the POST connection for the parameters
 		conn.setRequestMethod("POST");
+		conn.setRequestProperty("Authorization", this.authToken);
         conn.setRequestProperty("Accept-Language", "en-GB,en;q=0.5");
         conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         conn.setRequestProperty("Content-length", Integer.toString(input.length()));
@@ -164,6 +245,9 @@ public class WSClientAPI
 	 ********************************************************************************/
 
 	public String deleteOrder(String id) throws Exception{
+		if (!this.isAuthenticated) {
+			this.authenticate();
+		}
 		// Set up the URL and connect to the node server
 		String url = "http://localhost:3000/api/delete-orders/"+id;
 		URL obj = new URL(url);
@@ -171,6 +255,7 @@ public class WSClientAPI
 
 		//Form the request header and instantiate the response code
 		con.setRequestMethod("DELETE");
+		con.setRequestProperty("Authorization", this.authToken);
 		int responseCode = con.getResponseCode();
 
 		//Set up a buffer to read the response from the server

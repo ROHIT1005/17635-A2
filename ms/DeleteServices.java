@@ -132,7 +132,7 @@ public class DeleteServices extends UnicastRemoteObject implements DeleteService
         } catch (Exception e){
             ReturnString = e.toString();
         }
-
+      
         try{
             addLog("user", "deleted the order with OrderID: " + orderid);
 
@@ -140,7 +140,6 @@ public class DeleteServices extends UnicastRemoteObject implements DeleteService
         {
 
         }
-
         return ReturnString;
     }
 
