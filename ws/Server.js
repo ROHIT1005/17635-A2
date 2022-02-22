@@ -31,6 +31,7 @@ var bodyParser  = require("body-parser");     //Javascript parser utility
 var rest = require("./REST.js");              //REST services/handler module
 var app  = express();                         //express instance
 var authData = require('./authdata.js');
+var fs = require('fs');
 
 // Function definition
 function REST(){
@@ -66,6 +67,12 @@ REST.prototype.configureExpress = function(connection) {
       app.use(bodyParser.urlencoded({ extended: true }));
       app.use(bodyParser.json());
       app.use(bodyParser.text());
+      app.use((req, res, next) => { // log request
+          fs.appendFile('logs.txt', req.method+" "+req.path+"\n", (err) => {
+            if (err) throw err;
+          });
+          next();
+      })
       app.use((req, res, next) => {
         if (!authData.checkToken(req.headers['authorization'])) {
             console.log('user not authenticated');
