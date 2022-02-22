@@ -179,7 +179,11 @@ public class RetrieveServices extends UnicastRemoteObject implements RetrieveSer
             ReturnString = e.toString();
         }
 
-        addLog("user", "retrieved all orders");
+        try {
+            addLog("user", "retrieved all orders");
+        } catch(IOException e) {
+        }
+
         return(ReturnString);
 
     } //retrieve all orders
@@ -263,7 +267,11 @@ public class RetrieveServices extends UnicastRemoteObject implements RetrieveSer
 
         } 
 
-        addLog("user", "retrieved order by OrderID: " + orderid);
+        try {
+            addLog("user", "retrieved order by OrderID: " + orderid);
+        } catch(IOException e) {
+        }
+        
         return(ReturnString);
 
     } //retrieve order by id

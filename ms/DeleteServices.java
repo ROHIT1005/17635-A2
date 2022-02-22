@@ -132,8 +132,14 @@ public class DeleteServices extends UnicastRemoteObject implements DeleteService
         } catch (Exception e){
             ReturnString = e.toString();
         }
+      
+        try{
+            addLog("user", "deleted the order with OrderID: " + orderid);
 
-        addLog("user", "deleted the order with OrderID: " + orderid);
+        } catch (IOException e)
+        {
+
+        }
         return ReturnString;
     }
 
