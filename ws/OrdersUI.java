@@ -71,7 +71,7 @@ public class OrdersUI
 			if ( option == '1' )
 			{
 
-				logger.addLog("user", "retrieved all orders in the order database.");
+				
 
 				// Here we retrieve all the orders in the order database
 
@@ -104,7 +104,6 @@ public class OrdersUI
 				{
 					System.out.print( "\nEnter the order ID: " );
 					orderid = keyboard.nextLine();
-					logger.addLog("user", "retrieved an order by ID: " + orderid);
 
 					try
 					{
@@ -139,7 +138,6 @@ public class OrdersUI
 
 			if ( option == '3' )
 			{
-				logger.addLog("user", "added a new order to the order database.");
 				// Here we create a new order entry in the database
 
 				dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -207,7 +205,6 @@ public class OrdersUI
 				{
 					System.out.print( "\nEnter the order ID: " );
 					orderid = keyboard.nextLine();
-					logger.addLog("user", "deleted an order with ID: " + orderid);
 
 					try
 					{
