@@ -36,6 +36,7 @@ public class AuthenticationServices extends UnicastRemoteObject implements Authe
 
     } // main
 
+    //register a first time user and create a token for autherization
     public String register(String username, String password) throws RemoteException
     {
         if (!this.creds.containsKey(username)) {
@@ -47,6 +48,7 @@ public class AuthenticationServices extends UnicastRemoteObject implements Authe
         return "";
     }
 
+    //verify the login credentials of the user and create a token
     public String login(String username, String password) throws RemoteException
     {
         if (this.creds.containsKey(username)) {
@@ -59,7 +61,8 @@ public class AuthenticationServices extends UnicastRemoteObject implements Authe
         }
         return "";
     }
-    
+
+    //Verify the auth token
     public boolean verify(String token) throws RemoteException
     {
         return this.tokens.contains(token);

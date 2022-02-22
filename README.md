@@ -11,5 +11,7 @@ $ java OrdersUI
 Windows:
 $ cd ws
 $ javac -classpath "json-20211205.jar" *.java
-$ java -classpath ".;json-20211205.jar" OrdersUI.java
+$ java -classpath ".;json-20211205.jar" OrdersUI
+
+Other steps are same as mentioned in the installation documents.
 

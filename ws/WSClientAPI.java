@@ -34,14 +34,14 @@ import org.json.JSONObject;
 
 public class WSClientAPI
 {
-	/********************************************************************************
-	* Description: Gets and returns all the orders in the orderinfo database
-	* Parameters: None
-	* Returns: String of all the current orders in the orderinfo database
-	********************************************************************************/
 	private boolean isAuthenticated = false;
 	private String authToken = "";
 
+	/********************************************************************************
+	 * Description: Posts the new user credentials to the server for authentication
+	 * Parameters: username and password
+	 * Returns: String that contains the status of the POST operation
+	 ********************************************************************************/
 	public void register(String username, String password) throws Exception {
 		String url = "http://localhost:3000/api/register";
 
@@ -86,6 +86,7 @@ public class WSClientAPI
 		con.disconnect();
 	}
 
+	//options to user to register or login to the system
 	public void authenticate() throws Exception {
 		System.out.println("You're not authenticated. Do you want to register or login?");
 		System.out.println("1. Register");
@@ -107,6 +108,11 @@ public class WSClientAPI
 		this.isAuthenticated = true;
 	}
 
+	/********************************************************************************
+	 * Description: Gets and returns all the orders in the orderinfo database
+	 * Parameters: None
+	 * Returns: String of all the current orders in the orderinfo database
+	 ********************************************************************************/
 	public String retrieveOrders() throws Exception
 	{
 		if (!this.isAuthenticated) {
